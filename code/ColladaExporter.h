@@ -104,10 +104,21 @@ protected:
     /// Writes the geometry library
     void WriteGeometryLibrary();
 
+	/// Writes library controller
+	void WriteControllerLibrary();
+	void buildSortedIndices(const size_t pIndex);
+	const aiNode* getRootOfController(const aiMesh* mesh);
+	void WriteControllerForMesh(const size_t pIndex);
+	void WriteJointsNameSourceNode(const size_t pIndex);
+	void WriteJointsPoseSourceNode(const size_t pIndex);
+	void WriteJointsWeightSourceNode(const size_t pIndex);
+	void WriteJointsTag(const size_t pIndex);
+	void WriteJointsVertexWeight(const size_t pIndex);
+
     /// Writes the given mesh
     void WriteGeometry( size_t pIndex);
 
-    enum FloatDataType { FloatType_Vector, FloatType_TexCoord2, FloatType_TexCoord3, FloatType_Color };
+	enum FloatDataType { FloatType_Matrix4x4, FloatType_Vector, FloatType_TexCoord2, FloatType_TexCoord3, FloatType_Color, FloatType_Weight };
 
     /// Writes a float array of the given type
     void WriteFloatArray( const std::string& pIdString, FloatDataType pType, const ai_real* pData, size_t pElementCount);
@@ -133,6 +144,20 @@ public:
     std::stringstream mOutput;
 
 protected:
+	///skin helper vectors
+	std::vector<std::string> _jointNames;
+	std::vector<float> _vertexWeigths;
+	struct SortHelpler
+	{
+		SortHelpler() {}
+		SortHelpler(size_t jInd, size_t wInd)
+			: jointIndex(jInd), weightIndex(wInd)
+		{}
+		size_t jointIndex;
+		size_t weightIndex;
+	};
+	std::vector<std::vector<SortHelpler>> _jointWeightIndByVertexInd;
+
     /// The IOSystem for output
     IOSystem* mIOSystem;
 
